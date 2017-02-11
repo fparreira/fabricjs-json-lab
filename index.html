@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fabric.js - json</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fabric.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>FabricJS - lab</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <button type="button" class="btn btn-default btn-lg" id="square">
+                        <span class="glyphicon glyphicon-unchecked"></span> square
+                    </button>
+                    <button type="button" class="btn btn-default btn-lg" id="circle">
+                        <span class="glyphicon glyphicon-record"></span> circle
+                    </button>
+                    <button type="button" class="btn btn-default btn-lg" id="pencil">
+                        <span class="glyphicon glyphicon-pencil"></span> pencil
+                    </button>
+                    <button type="button" class="btn btn-default btn-lg" id="text">
+                        <span class="glyphicon glyphicon-text-size"></span> text
+                    </button>
+                    <button type="button" class="btn btn-default btn-lg" id="del">
+                        <span class="glyphicon glyphicon-trash"></span> del
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <button type="button" class="btn btn-default btn-lg" id="jsonfy">
+                        <span class="glyphicon glyphicon-align-justify"></span> JSONfy Canvas 1
+                    </button>
+                    <button type="button" class="btn btn-default btn-lg" id="clone">
+                        <span class="glyphicon glyphicon-paste"></span> Clone Canvas 1
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div>canvas 1</div>
+            <canvas id="c1" width="550" height="600"></canvas>
+        </div>
+        <div class="col-md-6">
+            <div>canvas 2</div>
+            <canvas id="c2" width="550" height="600"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body" id="jsonresult">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="text/javascript">
+    $("document").ready(function () {
+        var canvas1 = new fabric.Canvas('c1');
+
+        // square click
+        $("#square").click(function () {
+
+            canvas1.isDrawingMode = false;
+
+            var newrect = new fabric.Rect({
+                width: 100,
+                height: 100,
+                fill: '#ee4433',
+                originX: 'center',
+                originY: 'center',
+                left: canvas1.width / 2,
+                top: canvas1.height / 2
+            });
+
+            canvas1.add(newrect);
+
+        });
+
+        // circle click
+        $("#circle").click(function () {
+
+            canvas1.isDrawingMode = false;
+
+            var newcircle = new fabric.Circle({
+                radius: 50,
+                fill: '#4958fa',
+                originX: 'center',
+                originY: 'center',
+                left: canvas1.width / 2,
+                top: canvas1.height / 2
+            });
+
+            canvas1.add(newcircle);
+
+        });
+
+        // pencil click
+        $("#pencil").click(function () {
+
+            canvas1.isDrawingMode = true;
+
+        });
+
+        // text click
+        $("#text").click(function () {
+
+            canvas1.isDrawingMode = false;
+
+            var newtext = new fabric.IText('click to edit', {
+                fill: "#0a0aaa",
+                originX: 'center',
+                originY: 'center',
+                left: canvas1.width / 2,
+                top: canvas1.height / 2
+            });
+            canvas1.add(newtext);
+
+        });
+
+        // função para deletar objetos selecionados
+        function deleteObjects() {
+            var activeObject = canvas1.getActiveObject(),
+                activeGroup = canvas1.getActiveGroup();
+            if (activeObject) {
+                canvas1.remove(activeObject);
+            }
+            else if (activeGroup) {
+                var objectsInGroup = activeGroup.getObjects();
+                canvas1.discardActiveGroup();
+                objectsInGroup.forEach(function (object) {
+                    canvas1.remove(object);
+                });
+            }
+        }
+
+        // ////////////////////////////////////////
+
+        // deletar objetos selecionados
+        $("#del").click(function () {
+            deleteObjects();
+        });
+        $(document).keydown(function (e) {
+            if (e.which === 46) {
+                deleteObjects();
+            }
+        });
+        // //////////////////////////////////
+
+        $("#jsonfy").click(function () {
+
+            var jsoncanvas = canvas1.toJSON();
+//            console.log(JSON.stringify(jsoncanvas));
+            $("#jsonresult").html("<b>JSON Canvas 1:</b></br>" + JSON.stringify(jsoncanvas, null, 4));
+
+        });
+        
+        $("#clone").click(function () {
+
+            var canvas2 = new fabric.Canvas('c2');
+
+            var jsoncanvas = canvas1.toJSON();
+
+            canvas2.dispose();
+
+            canvas2.loadFromJSON(jsoncanvas, canvas2.renderAll.bind(canvas2));
+
+        });
+
+    });
+
+</script>
+
+</body>
+</html>
